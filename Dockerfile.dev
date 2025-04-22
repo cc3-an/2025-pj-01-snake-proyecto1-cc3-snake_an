@@ -1,0 +1,5 @@
+FROM gcc:12.2.0
+WORKDIR /app
+COPY . .
+RUN apt-get update && apt-get install -y make valgrind
+CMD ["sleep", "infinity"]

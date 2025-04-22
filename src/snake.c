@@ -1,56 +1,46 @@
 #include <stdio.h>
-#include <string.h>
-
-#include "snake_utils.h"
+#include <stdlib.h>
+#include <stdbool.h>
 #include "state.h"
 
-int main(int argc, char* argv[]) {
-  char* in_filename = NULL;
-  char* out_filename = NULL;
-  game_state_t* state = NULL;
-
-  // Parsea los argumentos recibidos
-  for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "-i") == 0 && i < argc - 1) {
-      in_filename = argv[i + 1];
-      i++;
-      continue;
+/**
+ * Función para agregar comida al tablero.
+ * Esta función encuentra una posición vacía y coloca un '*' (comida) allí.
+ * Devuelve 1 si tuvo éxito, de lo contrario 0.
+ */
+int add_food(game_state_t* state) {
+    for (unsigned int i = 0; i < state->num_rows; i++) {
+        for (unsigned int j = 0; j < strlen(state->board[i]); j++) {
+            if (state->board[i][j] == ' ') {
+                state->board[i][j] = '*';
+                return 1;
+            }
+        }
     }
-    if (strcmp(argv[i], "-o") == 0 && i < argc - 1) {
-      out_filename = argv[i + 1];
-      i++;
-      continue;
+    return 0; // No hay espacio para comida
+}
+
+int main() {
+    // Crear el estado del juego
+    game_state_t* state = create_default_state();
+
+    // Mostrar el tablero inicial
+    printf("Tablero inicial:\n");
+    print_board(state, stdout);
+
+    // Inicializar las serpientes en el tablero
+    state = initialize_snakes(state);
+
+    // Ejecutar el bucle principal del juego
+    printf("\nActualizando estado del juego...\n");
+    for (int i = 0; i < 5; i++) { // Simular 5 pasos del juego
+        update_state(state, add_food);
+        print_board(state, stdout);
+        printf("\n");
     }
-    fprintf(stderr, "Usage: %s [-i filename] [-o filename]\n", argv[0]);
-    return 1;
-  }
 
-  // NO MODIFIQUEN NADA ARRIBA DE ESTA LINEA.
+    // Liberar memoria
+    free_state(state);
 
-  /* Tarea 7 */
-
-  // Leer el tablero de un archivo, o crear un tablero por defecto.
-  if (in_filename != NULL) {
-    // TODO: cargar el tablero de in_filename
-    // TODO: Si el archivo no existe, retornar -1
-    // TODO: Despues llamar a initialize_snakes en el estado creado
-  } else {
-    // TODO: Cargar el estado por defecto.
-  }
-
-  // TODO: Actualizar el estado. Utilizar la funcion deterministic_food
-  // (esta ya ha sido creada en snakes_utils.h) para agregar comida al
-  // tablero)
-
-  // Write updated board to file or stdout
-  // Escribir el tablero actualizado al archivo o stdout
-  if (out_filename != NULL) {
-    // TODO: Guardar el tablero en out_filename
-  } else {
-    // TODO: Imprimir el tablero a stdout
-  }
-
-  // TODO: Liberen el estado creado
-
-  return 0;
+    return 0;
 }
